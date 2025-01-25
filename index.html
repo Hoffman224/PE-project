@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>โปรแกรมคำนวณการออกกำลังกาย</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+background: rgb(74,121,161);
+background: linear-gradient(-180deg, rgba(74,121,161,1) 0%, rgba(20,36,54,1) 100%);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: #4e4e4e;
+    }
+    label {
+      font-size: 1rem;
+      font-weight: 500;
+      margin: 10px 0 5px;
+      display: block;
+      color: #333;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #6e8efb;
+      box-shadow: 0 0 5px rgba(110, 142, 251, 0.5);
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+background: rgb(48,57,64);
+      border: none;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #5d7cfb, #9f68e0);
+    }
+    .result, .exercise, .nutrition {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 1rem;
+      line-height: 1.5;
+      text-align: left;
+    }
+    .result {
+      background: #eaf4e6;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+    .exercise {
+      background: #fff5e5;
+      border: 1px solid #ffeeba;
+      color: #856404;
+    }
+    .nutrition {
+      background: #e3f2fd;
+      border: 1px solid #bbdefb;
+      color: #0d47a1;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    ul li {
+      margin-bottom: 8px;
+    }
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1>โปรแกรมคำนวณและแนะนำการออกกำลังกาย</h1>
+    <form id="exerciseForm">
+      <label for="weight">น้ำหนัก (กิโลกรัม):</label>
+      <input type="number" id="weight" required>
+
+      <label for="height">ส่วนสูง (เซนติเมตร):</label>
+      <input type="number" id="height" required>
+
+      <label for="age">อายุ (ปี):</label>
+      <input type="number" id="age" required>
+
+      <label for="goal">เป้าหมาย:</label>
+      <select id="goal" required>
+        <option value="lose">ลดน้ำหนัก</option>
+        <option value="maintain">รักษาน้ำหนัก</option>
+        <option value="gain">เพิ่มกล้ามเนื้อ</option>
+      </select>
+
+      <label for="condition">สภาพร่างกาย:</label>
+      <select id="condition" required>
+        <option value="normal">ปกติ</option>
+        <option value="tired">รู้สึกเหนื่อย</option>
+        <option value="injured">บาดเจ็บ</option>
+      </select>
+
+      <button type="button" onclick="calculate()">คำนวณ</button>
+    </form>
+
+    <div id="result" class="result" style="display: none;"></div>
+    <div id="exercise" class="exercise" style="display: none;"></div>
+    <div id="nutrition" class="nutrition" style="display: none;"></div>
+  </div>
+
+  <script>
+    function calculate() {
+      const weight = parseFloat(document.getElementById("weight").value);
+      const height = parseFloat(document.getElementById("height").value);
+      const age = parseInt(document.getElementById("age").value);
+      const goal = document.getElementById("goal").value;
+      const condition = document.getElementById("condition").value;
+
+      if (isNaN(weight) || isNaN(height) || isNaN(age)) {
+        alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+        return;
+      }
+
+      // คำนวณค่า BMR (สูตร Harris-Benedict)
+      const bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+
+      // คำนวณ TDEE (ใช้ค่า TDEE โดยประมาณ)
+      let tdee;
+      if (goal === "lose") {
+        tdee = bmr * 1.2 - 500; // ลดน้ำหนัก
+      } else if (goal === "maintain") {
+        tdee = bmr * 1.2; // รักษาน้ำหนัก
+      } else if (goal === "gain") {
+        tdee = bmr * 1.2 + 500; // เพิ่มน้ำหนัก
+      }
+
+      // แสดงผลลัพธ์
+      const resultDiv = document.getElementById("result");
+      resultDiv.style.display = "block";
+      resultDiv.innerHTML = `
+        <p>ค่า BMR ของคุณ: ${bmr.toFixed(2)} แคลอรี</p>
+        <p>ปริมาณแคลอรีที่แนะนำต่อวัน (TDEE): ${tdee.toFixed(2)} แคลอรี</p>
+        <p>เป้าหมายของคุณ: ${
+          goal === "lose" ? "ลดน้ำหนัก" : goal === "maintain" ? "รักษาน้ำหนัก" : "เพิ่มกล้ามเนื้อ"
+        }</p>
+      `;
+
+     // แนะนำท่าออกกำลังกาย
+      const exerciseDiv = document.getElementById("exercise");
+      exerciseDiv.style.display = "block";
+      let exercises;
+      if (condition === "tired") {
+        exercises = `
+          <h3>ท่าออกกำลังกายเบาๆ:</h3>
+          <ul>
+            <li>เดินช้าๆ (Light Walking) - 20 นาที</li>
+            <li>ยืดกล้ามเนื้อ (Stretching) - 15 นาที</li>
+            <li>โยคะเบา (Gentle Yoga) - 15 นาที</li>
+          </ul>
+        `;
+      } else if (condition === "injured") {
+        exercises = `
+          <h3>ท่าออกกำลังกายที่เหมาะสำหรับการฟื้นตัว:</h3>
+          <ul>
+            <li>ออกกำลังกายในน้ำ (Water Therapy) - 30 นาที</li>
+            <li>การเคลื่อนไหวเบาๆ (Range of Motion Exercises) - 15 นาที</li>
+          </ul>
+        `;
+      } else {
+        if (goal === "lose") {
+          exercises = `
+            <h3>ท่าออกกำลังกายสำหรับลดน้ำหนัก:</h3>
+            <ul>
+              <li>วิ่งจ๊อกกิ้ง (Jogging) - 30 นาที</li>
+              <li>กระโดดเชือก (Jump Rope) - 15 นาที</li>
+              <li>ท่า Mountain Climbers - 3 เซ็ต (20 ครั้งต่อเซ็ต)</li>
+            </ul>
+          `;
+        } else if (goal === "maintain") {
+          exercises = `
+            <h3>ท่าออกกำลังกายสำหรับรักษาน้ำหนัก:</h3>
+            <ul>
+              <li>เดินเร็ว (Fast Walking) - 30 นาที</li>
+              <li>วิดพื้น (Push-ups) - 3 เซ็ต (15 ครั้งต่อเซ็ต)</li>
+              <li>โยคะ (Yoga) - 20 นาที</li>
+            </ul>
+          `;
+        } else if (goal === "gain") {
+          exercises = `
+            <h3>ท่าออกกำลังกายสำหรับเพิ่มกล้ามเนื้อ:</h3>
+            <ul>
+              <li>Squats - 3 เซ็ต (12 ครั้งต่อเซ็ต)</li>
+              <li>Deadlifts - 3 เซ็ต (10 ครั้งต่อเซ็ต)</li>
+              <li>ดันพื้นด้วยดัมเบล (Dumbbell Bench Press) - 3 เซ็ต (10 ครั้งต่อเซ็ต)</li>
+            </ul>
+          `;
+        }
+      }
+      exerciseDiv.innerHTML = exercises;
+
+      // แนะนำด้านโภชนาการ
+      const nutritionDiv = document.getElementById("nutrition");
+      nutritionDiv.style.display = "block";
+      let nutrition;
+      if (goal === "lose") {
+        nutrition = `
+          <h3>คำแนะนำด้านโภชนาการสำหรับลดน้ำหนัก:</h3>
+          <ul>
+            <li>ลดการบริโภคน้ำตาลและแป้ง</li>
+            <li>เลือกโปรตีนที่มีคุณภาพ เช่น อกไก่ ปลา</li>
+            <li>เพิ่มผักและผลไม้สดในมื้ออาหาร</li>
+          </ul>
+        `;
+      } else if (goal === "maintain") {
+        nutrition = `
+          <h3>คำแนะนำด้านโภชนาการสำหรับรักษาน้ำหนัก:</h3>
+          <ul>
+            <li>กินอาหารครบ 5 หมู่ในปริมาณที่เหมาะสม</li>
+            <li>ดื่มน้ำให้เพียงพอ (2-3 ลิตรต่อวัน)</li>
+            <li>หลีกเลี่ยงอาหารแปรรูป</li>
+          </ul>
+        `;
+      } else if (goal === "gain") {
+        nutrition = `
+          <h3>คำแนะนำด้านโภชนาการสำหรับเพิ่มกล้ามเนื้อ:</h3>
+          <ul>
+            <li>บริโภคโปรตีนสูง เช่น เนื้อสัตว์ ไข่ขาว เวย์โปรตีน</li>
+            <li>เพิ่มคาร์โบไฮเดรตที่ดี เช่น ข้าวกล้อง มันฝรั่ง</li>
+            <li>กินอาหารมื้อเล็กบ่อยๆ</li>
+          </ul>
+        `;
+      }
+      nutritionDiv.innerHTML = nutrition;
+    }
+  </script>
+</body>
+</html>
